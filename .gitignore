@@ -208,3 +208,7 @@ __marimo__/
 
 # Vim
 *.swp
+
+# other
+gameplan.txt
+boootdev_sitegen_arch.png
