@@ -1,6 +1,7 @@
 import re
 from enum import Enum
 
+from leafnode import LeafNode
 from parentnode import ParentNode
 from textnode import convert_line_to_textnodes, text_node_to_html_node
 
@@ -23,7 +24,7 @@ def markdown_to_html_node(markdown):
 			case BlockType.HEADING:
 				pass
 			case BlockType.CODE:
-				pass
+				children.append(markdown_to_code(block))
 			case BlockType.QUOTE:
 				pass
 			case BlockType.UNORDERED_LIST:
@@ -33,9 +34,6 @@ def markdown_to_html_node(markdown):
 			case _:
 				raise Exception("Unrecognized Block Type.")
 	return ParentNode("div", children)
-
-
-
 
 def markdown_to_blocks(markdown):
 	initial_split = markdown.split("\n\n")
@@ -95,6 +93,14 @@ def markdown_to_paragraph(block):
 	textNodes = convert_line_to_textnodes(unified)
 	children = []
 	for node in textNodes:
-		print(node)
 		children.append(text_node_to_html_node(node))
 	return ParentNode("p", children)
+
+def markdown_to_code(block):
+	unquoted = block[3:-3]
+	lines = unquoted.split('\n')
+	normalized = [line.strip() for line in lines]
+	filtered = [line for line in lines if line != ""]
+	cleaned = "\n".join(filtered) + "\n"
+	children = [LeafNode("code", cleaned)]
+	return ParentNode("pre", children)
