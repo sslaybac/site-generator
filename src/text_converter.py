@@ -1,6 +1,9 @@
 import re
 from enum import Enum
 
+from parentnode import ParentNode
+from textnode import convert_line_to_textnodes, text_node_to_html_node
+
 class BlockType(Enum):
 	PARAGRAPH = "paragraph"
 	HEADING = "heading"
@@ -8,6 +11,31 @@ class BlockType(Enum):
 	QUOTE = "quote"
 	UNORDERED_LIST = "unordered_list"
 	ORDERED_LIST = "ordered_list"
+
+def markdown_to_html_node(markdown):
+	blocks = markdown_to_blocks(markdown)
+	children = []
+	for block in blocks:
+		b_type = identify_block_type(block)
+		match b_type:
+			case BlockType.PARAGRAPH:
+				children.append(markdown_to_paragraph(block))
+			case BlockType.HEADING:
+				pass
+			case BlockType.CODE:
+				pass
+			case BlockType.QUOTE:
+				pass
+			case BlockType.UNORDERED_LIST:
+				pass
+			case BlockType.ORDERED_LIST:
+				pass
+			case _:
+				raise Exception("Unrecognized Block Type.")
+	return ParentNode("div", children)
+
+
+
 
 def markdown_to_blocks(markdown):
 	initial_split = markdown.split("\n\n")
@@ -60,3 +88,13 @@ def isOrderedList(block):
 		if not re.match(re_ordered, block):
 			return False
 	return True
+
+def markdown_to_paragraph(block):
+	lines = block.split("\n")
+	unified = " ".join(lines)
+	textNodes = convert_line_to_textnodes(unified)
+	children = []
+	for node in textNodes:
+		print(node)
+		children.append(text_node_to_html_node(node))
+	return ParentNode("p", children)
