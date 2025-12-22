@@ -20,17 +20,17 @@ def markdown_to_html_node(markdown):
 		b_type = identify_block_type(block)
 		match b_type:
 			case BlockType.PARAGRAPH:
-				children.append(markdown_to_paragraph(block))
+				children.append(block_to_paragraph(block))
 			case BlockType.HEADING:
-				pass
+				children.append(block_to_heading(block))
 			case BlockType.CODE:
-				children.append(markdown_to_code(block))
+				children.append(block_to_code(block))
 			case BlockType.QUOTE:
-				pass
+				children.append(block_to_quote(block))
 			case BlockType.UNORDERED_LIST:
-				pass
+				children.append(block_to_list(block, False))
 			case BlockType.ORDERED_LIST:
-				pass
+				children.append(block_to_list(block, True))
 			case _:
 				raise Exception("Unrecognized Block Type.")
 	return ParentNode("div", children)
@@ -62,7 +62,7 @@ def identify_block_type(block):
 	elif isUnorderedList(block):
 		return BlockType.UNORDERED_LIST
 	elif isOrderedList(block):
-		return BlockType.UNORDERED_LIST
+		return BlockType.ORDERED_LIST
 	else:
 		return BlockType.PARAGRAPH
 
@@ -74,6 +74,7 @@ def isQuote(block):
 	return True
 
 def isUnorderedList(block):
+	print()
 	lines = block.split('\n')
 	for line in lines:
 		if not line.startswith('- '):
@@ -87,7 +88,7 @@ def isOrderedList(block):
 			return False
 	return True
 
-def markdown_to_paragraph(block):
+def block_to_paragraph(block):
 	lines = block.split("\n")
 	unified = " ".join(lines)
 	textNodes = convert_line_to_textnodes(unified)
@@ -96,11 +97,64 @@ def markdown_to_paragraph(block):
 		children.append(text_node_to_html_node(node))
 	return ParentNode("p", children)
 
-def markdown_to_code(block):
+# TODO: figure out how to handle whitespace on each line of code
+def block_to_code(block):
 	unquoted = block[3:-3]
 	lines = unquoted.split('\n')
 	normalized = [line.strip() for line in lines]
 	filtered = [line for line in lines if line != ""]
-	cleaned = "\n".join(filtered) + "\n"
+	cleaned = "\n".join(filtered)
 	children = [LeafNode("code", cleaned)]
 	return ParentNode("pre", children)
+
+def block_to_heading(block):
+	"""
+	1. split string into (hashpart, remainder)
+	2. count hashes
+	3. create textnode(s) using convert_line_to_textnodes
+	4. create a list of Leafnodes from the textnodes
+	5. create parent node (h*, children)
+	"""
+	split_block = block.split(" ", maxsplit=1)
+	heading_depth = len(split_block[0])
+	unified = " ".join(split_block[1].split("\n"))
+	textNodes = convert_line_to_textnodes(unified)
+	children = []
+	for node in textNodes:
+		children.append(text_node_to_html_node(node))
+	return ParentNode(f"h{heading_depth}", children)
+
+def block_to_list(block, ordered):
+	if ordered:
+		main_tag = "ol"
+	else:
+		main_tag = "ul"
+	children = []
+	list_items = block.split("\n")
+
+	for line in list_items:
+		children.append(line_to_list_item(line))
+
+	return ParentNode(main_tag, children)
+
+def line_to_list_item(line):
+	text = line.split(" ", maxsplit=1)[1]
+	children = []
+	textNodes = convert_line_to_textnodes(text)
+	for node in textNodes:
+		children.append(text_node_to_html_node(node))
+	return ParentNode("li", children)
+
+def block_to_quote(block):
+	lines = block.split("\n")
+	normalized = [strip_quote_prefix(line) for line in lines]
+	text = " ".join(normalized)
+	children = [LeafNode("quote", text)]
+	return ParentNode("pre", children)
+
+QUOTE_PREFIX_RE = re.compile(r"^>\s*(.*)$")
+def strip_quote_prefix(line: str) -> str:
+	match = QUOTE_PREFIX_RE.match(line)
+	if match:
+		return match.group(1)
+	return line  # fallback, in case something slips through
