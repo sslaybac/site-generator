@@ -1,7 +1,7 @@
 import unittest
 
 from leafnode import LeafNode
-from text_converter import BlockType, identify_block_type, markdown_to_blocks, markdown_to_html_node
+from text_converter import BlockType, extract_title, identify_block_type, markdown_to_blocks, markdown_to_html_node
 
 class TestTextConverter(unittest.TestCase):
 	def test_markdown_to_blocks(self):
@@ -201,3 +201,34 @@ class TestTextConverter(unittest.TestCase):
 		html = node.to_html()
 		expected = '<div><h1>This is an <b>important</b> heading</h1><h6>This heading is far less important</h6><p>This is a simple multiline paragraph with <i>italic</i> text</p><ol><li>First <i>ordered</i> list item</li><li>Second <i>ordered</i> list item</li></ol><ul><li>First <i>unordered</i> list item</li><li>Second <i>unordered</i> list item</li></ul><pre><quote>It was the **best** of times It was the _worst_ of times</quote></pre><pre><code>def test():\nprint("testing")\n# this is **not** parsed and _stays_ `the same</code></pre></div>'
 		self.assertEqual(html, expected)
+
+	def test_extract_title(self):
+		md = """
+			# This is an **important** heading
+
+			###### This heading is
+			far less important
+
+			This is a simple
+			multiline paragraph with
+			_italic_ text
+
+			1. First _ordered_ list item
+			2. Second _ordered_ list item
+
+			- First _unordered_ list item
+			- Second _unordered_ list item
+
+			> It was the **best** of times
+			>It was the _worst_ of times
+
+			```
+			def test():
+				print("testing")
+				# this is **not** parsed and _stays_ `the same
+			```
+			"""
+
+		title = extract_title(md)
+		expected = "This is an important heading"
+		self.assertEqual(title, expected)

@@ -10,3 +10,6 @@ class LeafNode(HTMLNode):
 			return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
 		else:
 			return f"{self.value}"
+
+	def to_raw_text(self):
+		return self.value

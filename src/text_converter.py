@@ -13,6 +13,25 @@ class BlockType(Enum):
 	UNORDERED_LIST = "unordered_list"
 	ORDERED_LIST = "ordered_list"
 
+"""
+Returns the raw text of the heading at the top of a markdown page. This text will be used as the <title> of the html translation
+parameters:
+- markdown: a string, intended to be the full contents of a markdown file
+return:
+- title: the text of the h1 header at the top of the file. The leading '# ' will be stripped away.
+	If the file does not begin with an h1 header block, This method will raise an exception
+"""
+def extract_title(markdown):
+	blocks = markdown_to_blocks(markdown)
+	title_block = blocks[0]
+	title_node = block_to_heading(title_block)
+	if title_node.tag != "h1":
+		raise Exception("The first block of markdown must be a h1 header (begins with '# ')")
+	return title_node.to_raw_text()
+	
+	
+
+
 def markdown_to_html_node(markdown):
 	blocks = markdown_to_blocks(markdown)
 	children = []
@@ -74,7 +93,6 @@ def isQuote(block):
 	return True
 
 def isUnorderedList(block):
-	print()
 	lines = block.split('\n')
 	for line in lines:
 		if not line.startswith('- '):

@@ -27,6 +27,9 @@ class HTMLNode:
 	def to_html(self):
 		raise NotImplementedError
 
+	def to_raw_text(self):
+		raise NotImplementedError
+
 	def props_to_html(self):
 		if not self.props:
 			return ""

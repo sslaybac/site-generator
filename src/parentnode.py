@@ -16,3 +16,7 @@ class ParentNode(HTMLNode):
 		output_string += f"</{self.tag}>"
 
 		return output_string
+
+	def to_raw_text(self):
+		children_text = [child.to_raw_text() for child in self.children]
+		return ''.join(children_text)
