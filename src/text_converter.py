@@ -26,7 +26,7 @@ def extract_title(markdown):
 	title_block = blocks[0]
 	title_node = block_to_heading(title_block)
 	if title_node.tag != "h1":
-		raise Exception("The first block of markdown must be a h1 header (begins with '# ')")
+		raise ValueError("The first block of markdown must be a h1 header (begins with '# ')")
 	return title_node.to_raw_text()
 	
 	

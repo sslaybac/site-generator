@@ -232,3 +232,68 @@ class TestTextConverter(unittest.TestCase):
 		title = extract_title(md)
 		expected = "This is an important heading"
 		self.assertEqual(title, expected)
+
+		md = """
+			# This is an important heading
+
+			###### This heading is
+			far less important
+
+			This is a simple
+			multiline paragraph with
+			_italic_ text
+
+			1. First _ordered_ list item
+			2. Second _ordered_ list item
+
+			- First _unordered_ list item
+			- Second _unordered_ list item
+
+			> It was the **best** of times
+			>It was the _worst_ of times
+
+			```
+			def test():
+				print("testing")
+				# this is **not** parsed and _stays_ `the same
+			```
+			"""
+
+		title = extract_title(md)
+		expected = "This is an important heading"
+		self.assertEqual(title, expected)
+
+		md = """
+
+			###### This heading is
+			far less important
+
+			# This title is in the wrong place
+
+			This is a simple
+			multiline paragraph with
+			_italic_ text
+
+			1. First _ordered_ list item
+			2. Second _ordered_ list item
+
+			- First _unordered_ list item
+			- Second _unordered_ list item
+
+			> It was the **best** of times
+			>It was the _worst_ of times
+
+			```
+			def test():
+				print("testing")
+				# this is **not** parsed and _stays_ `the same
+			```
+			"""
+
+		with self.assertRaises(ValueError):
+			title = extract_title(md)
+
+		md = """ """
+
+		with self.assertRaises(IndexError):
+			title = extract_title(md)
