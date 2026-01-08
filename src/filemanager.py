@@ -61,3 +61,37 @@ def generate_page(from_path, template_path, dest_path):
 
 	with open(dest_path, "w") as file3:
 		file3.write(template)
+
+"""
+generate_pages_recursive()
+inputs
+	content_dir_path: which directory should be searched for markdown
+	template_path: an html file to be used as a template for the new content
+	dest_dir_path: the directory to be used to store the newly generted html
+outputs:
+	no direct return
+	new html files and directories will be created in dest_dir_path, with a structure parallelling
+		that of the markdown files in content_dir_path
+1. get a list of all contents of the content_dir
+2. for each entry in the list:
+	1. if it is a directory:
+		1. join the directory name to content_dir_path and dest_dir_path to generate new paths
+		2. recursively call this function using the new paths
+	2. Otherwise:
+		1. If it is not a markdown file, ignore it.
+		2. If it is a markdown file:
+			1. create full paths for the source and destination
+			2. call generate page using the new paths
+"""
+def generate_pages_recursive(content_dir_path, template_path, dest_dir_path):
+	entries = os.listdir(content_dir_path)
+	for entry in entries:
+		entry_path = os.path.join(content_dir_path, entry)
+		dest_path = os.path.join(dest_dir_path, entry)
+		if os.path.isdir(entry_path):
+			generate_pages_recursive(entry_path, template_path, dest_path)
+		else:
+			base, ext = os.path.splitext(entry)
+			if ext == '.md':
+				dest_path = os.path.join(dest_dir_path, base + '.html')
+				generate_page(entry_path, template_path, dest_path)
