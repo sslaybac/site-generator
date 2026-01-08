@@ -167,7 +167,7 @@ def block_to_quote(block):
 	lines = block.split("\n")
 	normalized = [strip_quote_prefix(line) for line in lines]
 	text = " ".join(normalized)
-	children = [LeafNode("quote", text)]
+	children = [LeafNode("blockquote", text)]
 	return ParentNode("pre", children)
 
 QUOTE_PREFIX_RE = re.compile(r"^>\s*(.*)$")

@@ -167,7 +167,7 @@ class TestTextConverter(unittest.TestCase):
 		"""
 		node = markdown_to_html_node(md)
 		html = node.to_html()
-		expected = "<div><pre><quote>One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed. He lay on his armour-like back. His many legs, pitifully thin, waved about helplessly as he looked. His room, a proper human room although a little too small, lay peacefully between its four familiar walls.</quote></pre></div>"
+		expected = "<div><pre><blockquote>One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed. He lay on his armour-like back. His many legs, pitifully thin, waved about helplessly as he looked. His room, a proper human room although a little too small, lay peacefully between its four familiar walls.</blockquote></pre></div>"
 		self.assertEqual(html, expected)
 
 	def test_multiblock_md(self):
@@ -199,7 +199,7 @@ class TestTextConverter(unittest.TestCase):
 
 		node = markdown_to_html_node(md)
 		html = node.to_html()
-		expected = '<div><h1>This is an <b>important</b> heading</h1><h6>This heading is far less important</h6><p>This is a simple multiline paragraph with <i>italic</i> text</p><ol><li>First <i>ordered</i> list item</li><li>Second <i>ordered</i> list item</li></ol><ul><li>First <i>unordered</i> list item</li><li>Second <i>unordered</i> list item</li></ul><pre><quote>It was the **best** of times It was the _worst_ of times</quote></pre><pre><code>def test():\nprint("testing")\n# this is **not** parsed and _stays_ `the same</code></pre></div>'
+		expected = '<div><h1>This is an <b>important</b> heading</h1><h6>This heading is far less important</h6><p>This is a simple multiline paragraph with <i>italic</i> text</p><ol><li>First <i>ordered</i> list item</li><li>Second <i>ordered</i> list item</li></ol><ul><li>First <i>unordered</i> list item</li><li>Second <i>unordered</i> list item</li></ul><pre><blockquote>It was the **best** of times It was the _worst_ of times</blockquote></pre><pre><code>def test():\nprint("testing")\n# this is **not** parsed and _stays_ `the same</code></pre></div>'
 		self.assertEqual(html, expected)
 
 	def test_extract_title(self):
