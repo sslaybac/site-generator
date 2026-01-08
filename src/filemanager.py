@@ -4,7 +4,7 @@ import os
 from text_converter import extract_title, markdown_to_html_node
 
 SRC_DIR = "./static"
-DST_DIR = "./public"
+DST_DIR = "./docs"
 
 def copy_static_to_public():
 	clear_public()
