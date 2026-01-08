@@ -36,7 +36,19 @@ def copy_dir(dirpath):
 			print(f"destination: {dst}")
 			shutil.copy(src, dst)
 
-def generate_page(from_path, template_path, dest_path):
+"""
+generate_page()
+inputs
+	from_path: The markdown file that will be used as the source for page content
+	template_path: A boilerplate html frame used to present the translated content
+	dest_path: the path to the complete generated html file. If any directories in this path don't exist, they will be created
+	basepath: the url to the root of the final web page
+outputs
+	No return
+	An html file will be generated at the location specified by dest_path.
+	Any necessary directories will also be created.
+"""
+def generate_page(from_path, template_path, dest_path, basepath):
 	print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 	markdown = ""
 	template = ""
@@ -53,6 +65,8 @@ def generate_page(from_path, template_path, dest_path):
 
 	template = template.replace("{{ Title }}", title)
 	template = template.replace("{{ Content }}", html)
+	template = template.replace('href="/', f'href="{basepath}/')
+	template = template.replace('src="/', f'src="{basepath}/')
 
 	# Create the directory for dest_path, if it doesn't exist.
 	dest_dir = os.path.dirname(dest_path)
@@ -68,6 +82,7 @@ inputs
 	content_dir_path: which directory should be searched for markdown
 	template_path: an html file to be used as a template for the new content
 	dest_dir_path: the directory to be used to store the newly generted html
+	basepath: the url to the root of the final web page
 outputs:
 	no direct return
 	new html files and directories will be created in dest_dir_path, with a structure parallelling
@@ -83,15 +98,15 @@ outputs:
 			1. create full paths for the source and destination
 			2. call generate page using the new paths
 """
-def generate_pages_recursive(content_dir_path, template_path, dest_dir_path):
+def generate_pages_recursive(content_dir_path, template_path, dest_dir_path, basepath):
 	entries = os.listdir(content_dir_path)
 	for entry in entries:
 		entry_path = os.path.join(content_dir_path, entry)
 		dest_path = os.path.join(dest_dir_path, entry)
 		if os.path.isdir(entry_path):
-			generate_pages_recursive(entry_path, template_path, dest_path)
+			generate_pages_recursive(entry_path, template_path, dest_path, basepath)
 		else:
 			base, ext = os.path.splitext(entry)
 			if ext == '.md':
 				dest_path = os.path.join(dest_dir_path, base + '.html')
-				generate_page(entry_path, template_path, dest_path)
+				generate_page(entry_path, template_path, dest_path, basepath)
