@@ -6,9 +6,9 @@ source_path = "content/index.md"
 content_path = "content"
 template_path = "template.html"
 dest_path = "docs"
-basepath = "/"
 
 def main():
+	basepath = "/"
 	if len(sys.argv) > 1:
 		basepath = sys.argv[1]
 
