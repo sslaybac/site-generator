@@ -1,1 +1,1 @@
-python3 src/main.py "site-generator/docs"
+python3 src/main.py "https://sslaybac.github.io/site-generator/docs"
